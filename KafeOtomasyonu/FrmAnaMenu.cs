@@ -29,74 +29,112 @@ namespace KafeOtomasyonu
         {
             KullaniciBilgisiVeYetkiAyarla();
             DashboardGuncelle();
+
         }
+        private void OzetLabelSinirlariniAyarla()
+        {
+            LabelSinirla(lblGunlukCiro, pnlGunlukCiro);
+            LabelSinirla(lblKritikStok, pnlKritikStok);
+            LabelSinirla(lblKasaDurumu, pnlKasaDurumu);
+        }
+
+        private void LabelSinirla(Label lbl, Control panel)
+        {
+            if (lbl == null || panel == null) return;
+
+            lbl.AutoSize = false;
+            lbl.Location = new Point(10, 10);
+            lbl.Size = new Size(Math.Max(50, panel.Width - 20), Math.Max(30, panel.Height - 20));
+            lbl.MaximumSize = new Size(Math.Max(50, panel.Width - 20), Math.Max(30, panel.Height - 20));
+        }
+
+
 
         private void KullaniciBilgisiVeYetkiAyarla()
         {
             string rolMetni = UserSession.AdminMi ? "Yönetici (Admin)" : "Kasa Personeli";
-            lblAktifKullanici.Text = $"Aktif Kullanıcı: {UserSession.AdSoyad} | Yetki: {rolMetni}";
-            lblTarihSaat.Text = DateTime.Now.ToString("dd.MM.yyyy HH:mm");
+            lblAktifKullanici.Text = $"Aktif Kullanıcı:\n{UserSession.AdSoyad} ({rolMetni})";
+            lblTarihSaat.Text = DateTime.Now.ToString("dd.MM.yyyy\nHH:mm");
 
-            // Yönetici (Admin) olmayan personeller için kısıtlamalar
             if (!UserSession.AdminMi)
             {
                 btnPersonelYonetim.Enabled = false;
                 btnPdfRaporlar.Enabled = false;
-                // İstersen tamamen gizlemek için Visible = false da yapabilirsin:
-                // btnPersonelYonetim.Visible = false;
-                // btnPdfRaporlar.Visible = false;
             }
         }
+
+
+
 
         public void DashboardGuncelle()
         {
             try
             {
-                // 1. GÜNÜN CİROSU (Sadece 'Tamamlandı' durumundaki bugünkü satışlar)
-                string ciroSorgu = @"SELECT ISNULL(SUM(ToplamTutar), 0) 
-                                     FROM Satislar 
-                                     WHERE CAST(SatisTarihi AS DATE) = CAST(GETDATE() AS DATE) 
+                OzetLabelSinirlariniAyarla();
+
+                // 1. GÜNÜN CİROSU
+                string ciroSorgu = @"SELECT ISNULL(SUM(ToplamTutar), 0)
+                                     FROM Satislar
+                                     WHERE CAST(SatisTarihi AS DATE) = CAST(GETDATE() AS DATE)
                                      AND SatisDurumu = 'Tamamlandı'";
                 DataTable dtCiro = _vt.VeriGetir(ciroSorgu);
-                decimal gunlukCiro = Convert.ToDecimal(dtCiro.Rows[0][0]);
-                lblGunlukCiro.Text = gunlukCiro.ToString("C2");
+                decimal gunlukCiro = (dtCiro != null && dtCiro.Rows.Count > 0 && dtCiro.Rows[0][0] != DBNull.Value)
+                    ? Convert.ToDecimal(dtCiro.Rows[0][0])
+                    : 0m;
 
-                // 2. KRİTİK STOK DURUMU (StokMiktari <= MinStokSiniri olan aktif ürünler)
-                string stokSorgu = @"SELECT UrunAdi 
-                                     FROM Urunler 
+                lblGunlukCiro.Text = $"Günlük Ciro:\n{gunlukCiro:C2}";
+
+                // 2. KRİTİK STOK DURUMU
+                string stokSorgu = @"SELECT UrunAdi
+                                     FROM Urunler
                                      WHERE SatistaMi = 1 AND MinStokSiniri > 0 AND StokMiktari <= MinStokSiniri";
                 DataTable dtStok = _vt.VeriGetir(stokSorgu);
 
-                if (dtStok.Rows.Count > 0)
+                if (dtStok != null && dtStok.Rows.Count > 0)
                 {
-                    lblKritikStok.Text = $"{dtStok.Rows.Count} Ürün Kritik Seviyede! ({dtStok.Rows[0]["UrunAdi"]} vb.)";
-                    pnlKritikStok.BackColor = Color.Firebrick;
+                    string ilkUrun = dtStok.Rows[0]["UrunAdi"]?.ToString() ?? "";
+                    lblKritikStok.Text = $"{dtStok.Rows.Count} Ürün Kritik Stokta!\n({ilkUrun})";
+                    if (pnlKritikStok != null) pnlKritikStok.BackColor = Color.Firebrick;
                     lblKritikStok.ForeColor = Color.White;
                 }
                 else
                 {
-                    lblKritikStok.Text = "Tüm Stoklar Yeterli";
-                    pnlKritikStok.BackColor = Color.ForestGreen;
+                    lblKritikStok.Text = "Stok Durumu:\nTüm Stoklar Yeterli";
+                    if (pnlKritikStok != null) pnlKritikStok.BackColor = Color.ForestGreen;
                     lblKritikStok.ForeColor = Color.White;
                 }
 
                 // 3. GÜNLÜK KASA KAPANIŞ (Z-RAPORU) DURUMU
-                string kasaSorgu = @"SELECT COUNT(*) 
-                                     FROM KasaKapanislari 
+                string kasaSorgu = @"SELECT COUNT(*)
+                                     FROM KasaKapanislari
                                      WHERE KapanisGunu = CAST(GETDATE() AS DATE)";
                 DataTable dtKasa = _vt.VeriGetir(kasaSorgu);
-                int kapanisSayisi = Convert.ToInt32(dtKasa.Rows[0][0]);
+                int kapanisSayisi = (dtKasa != null && dtKasa.Rows.Count > 0 && dtKasa.Rows[0][0] != DBNull.Value)
+                    ? Convert.ToInt32(dtKasa.Rows[0][0])
+                    : 0;
 
                 if (kapanisSayisi > 0)
                 {
-                    lblKasaDurumu.Text = "Bugünün Kasa Kapanışı Yapıldı";
+                    lblKasaDurumu.Text = "Kasa Durumu:\nBugünün Kapanışı Yapıldı";
                     lblKasaDurumu.BackColor = Color.SeaGreen;
                     lblKasaDurumu.ForeColor = Color.White;
                 }
                 else
                 {
-                    lblKasaDurumu.Text = "Gün Sonu Kapanışı Bekleniyor";
-                    lblKasaDurumu.BackColor = Color.DarkOrange;
+                    TimeSpan simdi = DateTime.Now.TimeOfDay;
+                    bool geceYarisinaYakin = simdi >= new TimeSpan(21, 0, 0);
+
+                    if (geceYarisinaYakin)
+                    {
+                        lblKasaDurumu.Text = "Gece 12'ye Yaklaşıldı!\nKasa Kapanışı Bekleniyor";
+                        lblKasaDurumu.BackColor = Color.Crimson;
+                    }
+                    else
+                    {
+                        lblKasaDurumu.Text = "Kasa Durumu:\nGün Sonu Kapanışı Bekleniyor";
+                        lblKasaDurumu.BackColor = Color.DarkOrange;
+                    }
+
                     lblKasaDurumu.ForeColor = Color.White;
                 }
             }
@@ -116,6 +154,27 @@ namespace KafeOtomasyonu
         private void FrmAnaMenu_Activated(object sender, EventArgs e)
         {
             DashboardGuncelle(); // Form aktif olduğunda özet verileri güncelle
+        }
+
+        private void btnKasaSatis_Click(object sender, EventArgs e)
+        {
+            FrmSatis satisFormu = new FrmSatis();
+            this.Hide();
+            satisFormu.ShowDialog();
+            this.Show();
+            DashboardGuncelle();
+
+            // Satış ekranından dönüldüğünde ana menüdeki özet kartları tazelemek için:
+            // DashboardGuncelle();
+
+        }
+       
+
+
+        private void btnCikisYap_Click_1(object sender, EventArgs e)
+        {
+            UserSession.Temizle();
+            this.Close();
         }
     }
 }

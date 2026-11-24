@@ -32,11 +32,11 @@
             this.lblTarihSaat = new System.Windows.Forms.Label();
             this.btnCikisYap = new System.Windows.Forms.Button();
             this.pnlUst = new System.Windows.Forms.Panel();
-            this.panel1 = new System.Windows.Forms.Panel();
-            this.pnlKritikStok = new System.Windows.Forms.Panel();
-            this.pnlKasaDurumu = new System.Windows.Forms.Panel();
+            this.pnlGunlukCiro = new System.Windows.Forms.Panel();
             this.lblGunlukCiro = new System.Windows.Forms.Label();
+            this.pnlKritikStok = new System.Windows.Forms.Panel();
             this.lblKritikStok = new System.Windows.Forms.Label();
+            this.pnlKasaDurumu = new System.Windows.Forms.Panel();
             this.lblKasaDurumu = new System.Windows.Forms.Label();
             this.btnKasaSatis = new System.Windows.Forms.Button();
             this.btnKasaKapanis = new System.Windows.Forms.Button();
@@ -45,7 +45,7 @@
             this.btnSatisGecmisi = new System.Windows.Forms.Button();
             this.btnPersonelYonetim = new System.Windows.Forms.Button();
             this.pnlUst.SuspendLayout();
-            this.panel1.SuspendLayout();
+            this.pnlGunlukCiro.SuspendLayout();
             this.pnlKritikStok.SuspendLayout();
             this.pnlKasaDurumu.SuspendLayout();
             this.SuspendLayout();
@@ -77,6 +77,7 @@
             this.btnCikisYap.TabIndex = 2;
             this.btnCikisYap.Text = "Oturumu Kapat";
             this.btnCikisYap.UseVisualStyleBackColor = true;
+            this.btnCikisYap.Click += new System.EventHandler(this.btnCikisYap_Click_1);
             // 
             // pnlUst
             // 
@@ -88,29 +89,13 @@
             this.pnlUst.Size = new System.Drawing.Size(1080, 107);
             this.pnlUst.TabIndex = 3;
             // 
-            // panel1
+            // pnlGunlukCiro
             // 
-            this.panel1.Controls.Add(this.lblGunlukCiro);
-            this.panel1.Location = new System.Drawing.Point(2, 127);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(325, 130);
-            this.panel1.TabIndex = 4;
-            // 
-            // pnlKritikStok
-            // 
-            this.pnlKritikStok.Controls.Add(this.lblKritikStok);
-            this.pnlKritikStok.Location = new System.Drawing.Point(381, 127);
-            this.pnlKritikStok.Name = "pnlKritikStok";
-            this.pnlKritikStok.Size = new System.Drawing.Size(325, 130);
-            this.pnlKritikStok.TabIndex = 5;
-            // 
-            // pnlKasaDurumu
-            // 
-            this.pnlKasaDurumu.Controls.Add(this.lblKasaDurumu);
-            this.pnlKasaDurumu.Location = new System.Drawing.Point(757, 127);
-            this.pnlKasaDurumu.Name = "pnlKasaDurumu";
-            this.pnlKasaDurumu.Size = new System.Drawing.Size(325, 130);
-            this.pnlKasaDurumu.TabIndex = 5;
+            this.pnlGunlukCiro.Controls.Add(this.lblGunlukCiro);
+            this.pnlGunlukCiro.Location = new System.Drawing.Point(2, 127);
+            this.pnlGunlukCiro.Name = "pnlGunlukCiro";
+            this.pnlGunlukCiro.Size = new System.Drawing.Size(325, 130);
+            this.pnlGunlukCiro.TabIndex = 4;
             // 
             // lblGunlukCiro
             // 
@@ -122,6 +107,14 @@
             this.lblGunlukCiro.TabIndex = 0;
             this.lblGunlukCiro.Text = "0";
             // 
+            // pnlKritikStok
+            // 
+            this.pnlKritikStok.Controls.Add(this.lblKritikStok);
+            this.pnlKritikStok.Location = new System.Drawing.Point(381, 127);
+            this.pnlKritikStok.Name = "pnlKritikStok";
+            this.pnlKritikStok.Size = new System.Drawing.Size(325, 130);
+            this.pnlKritikStok.TabIndex = 5;
+            // 
             // lblKritikStok
             // 
             this.lblKritikStok.AutoSize = true;
@@ -131,6 +124,14 @@
             this.lblKritikStok.Size = new System.Drawing.Size(31, 32);
             this.lblKritikStok.TabIndex = 0;
             this.lblKritikStok.Text = "0";
+            // 
+            // pnlKasaDurumu
+            // 
+            this.pnlKasaDurumu.Controls.Add(this.lblKasaDurumu);
+            this.pnlKasaDurumu.Location = new System.Drawing.Point(757, 127);
+            this.pnlKasaDurumu.Name = "pnlKasaDurumu";
+            this.pnlKasaDurumu.Size = new System.Drawing.Size(325, 130);
+            this.pnlKasaDurumu.TabIndex = 5;
             // 
             // lblKasaDurumu
             // 
@@ -151,6 +152,7 @@
             this.btnKasaSatis.TabIndex = 6;
             this.btnKasaSatis.Text = "KASA / SATIŞ EKRANI";
             this.btnKasaSatis.UseVisualStyleBackColor = true;
+            this.btnKasaSatis.Click += new System.EventHandler(this.btnKasaSatis_Click);
             // 
             // btnKasaKapanis
             // 
@@ -216,7 +218,7 @@
             this.Controls.Add(this.btnKasaSatis);
             this.Controls.Add(this.pnlKasaDurumu);
             this.Controls.Add(this.pnlKritikStok);
-            this.Controls.Add(this.panel1);
+            this.Controls.Add(this.pnlGunlukCiro);
             this.Controls.Add(this.pnlUst);
             this.Name = "FrmAnaMenu";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
@@ -225,8 +227,8 @@
             this.Load += new System.EventHandler(this.FrmAnaMenu_Load);
             this.pnlUst.ResumeLayout(false);
             this.pnlUst.PerformLayout();
-            this.panel1.ResumeLayout(false);
-            this.panel1.PerformLayout();
+            this.pnlGunlukCiro.ResumeLayout(false);
+            this.pnlGunlukCiro.PerformLayout();
             this.pnlKritikStok.ResumeLayout(false);
             this.pnlKritikStok.PerformLayout();
             this.pnlKasaDurumu.ResumeLayout(false);
@@ -241,7 +243,7 @@
         private System.Windows.Forms.Label lblTarihSaat;
         private System.Windows.Forms.Button btnCikisYap;
         private System.Windows.Forms.Panel pnlUst;
-        private System.Windows.Forms.Panel panel1;
+        private System.Windows.Forms.Panel pnlGunlukCiro;
         private System.Windows.Forms.Panel pnlKritikStok;
         private System.Windows.Forms.Panel pnlKasaDurumu;
         private System.Windows.Forms.Label lblGunlukCiro;

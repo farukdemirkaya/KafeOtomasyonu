@@ -83,5 +83,10 @@ namespace KafeOtomasyonu.Core
                 return false;
             }
         }
+        // 4. Transaction gibi özel işlemler için açık olmayan SqlConnection nesnesi üretir
+        public SqlConnection BaglantiOlustur()
+        {
+            return new SqlConnection(baglantiCumlesi);
+        }
     }
 }

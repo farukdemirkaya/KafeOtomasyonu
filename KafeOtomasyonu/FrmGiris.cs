@@ -115,7 +115,7 @@ namespace KafeOtomasyonu
                 this.Show();
                 PersonelleriGetir();
 
-                MessageBox.Show($"Hoş geldiniz, {UserSession.AdSoyad}!", "Giriş Başarılı", MessageBoxButtons.OK, MessageBoxIcon.Information);
+               
             }
             else
             {
